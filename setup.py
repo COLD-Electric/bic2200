@@ -6,5 +6,9 @@ setup(
     author="Ernie Lin",  
     author_email="ernielin@htbi.com.tw",  
     description="bic2200 drivers",   
-    packages=find_packages()  
+    packages=find_packages() ,
+    install_requires=[
+        'python-can',
+        'canalystii',
+    ]
 )

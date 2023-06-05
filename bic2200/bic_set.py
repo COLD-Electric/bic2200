@@ -5,10 +5,10 @@ import time
 import can
 
 class Bic2200(object):
-    def __init__(self, canbus: can.Bus, bicDevNo=0):
+    def __init__(self, canbus: can.Bus, bic_device_number=0):
         self.canbus = canbus
         self.listener = BicCanListener()
-        self.bic_device = bicDevNo
+        self.bic_device_number = bic_device_number
         # Create a BmsCanListener object to listen to the CAN bus
         self.poster = BicCanSend(self.canbus)
         self.post_checker = SendListener()
@@ -42,7 +42,7 @@ class Bic2200(object):
             SendListener: A SendListener object.
         """
         # Create a thread to send messages
-        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device))
+        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device_number))
         send_msg_task.start()
         
         # Add the listener to the CAN bus
@@ -72,7 +72,7 @@ class Bic2200(object):
         resend_times = 0
         while read_param != value:
             time.sleep(0.5)
-            self.poster.write(str_param, value, self.bic_device)
+            self.poster.write(str_param, value, self.bic_device_number)
             resend_times = resend_times + 1
             if resend_times > MAX_RESEND - 1:
                 raise RuntimeError(f"No response received for message {str_param}")
@@ -177,7 +177,7 @@ class Bic2200(object):
             SendListener: A SendListener object used for checking if messages have been sent successfully.
         """
         # Create a thread to send messages
-        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device))
+        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device_number))
         send_msg_task.start()
     
         # Add the listener to the CAN bus
@@ -190,20 +190,20 @@ class Bic2200(object):
         """
         sys = self.listener.sys_configs
         while (sys & 0x01) != 1:
-            self.poster.write("system_config", (sys | 0x01), self.bic_device)
+            self.poster.write("system_config", (sys | 0x01), self.bic_device_number)
             sys = self.listener.sys_configs
         while (self.listener.bidir_configs & 0x01) != 1:
-            self.poster.write("bidirectional_config", 0x01, self.bic_device)
+            self.poster.write("bidirectional_config", 0x01, self.bic_device_number)
     
     def set_auto_ctrl(self) -> None:
         """
         Sends messages to set the automatic control.
         """
         while (self.listener.bidir_configs & 0x01) != 0:
-            self.poster.write("bidirectional_config", 0x00, self.bic_device)
+            self.poster.write("bidirectional_config", 0x00, self.bic_device_number)
         sys = self.listener.sys_configs
         while (sys & 0x01) != 0:
-            self.poster.write("system_config", (sys & 0x06), self.bic_device)
+            self.poster.write("system_config", (sys & 0x06), self.bic_device_number)
             sys = self.listener.sys_configs
     
     def set_operation_init(self, switch) -> None:
@@ -217,5 +217,5 @@ class Bic2200(object):
             switch = 2
         sys = self.listener.sys_configs
         while(sys >> 1) != switch:
-            self.poster.write("system_config", (switch << 1) | (sys & 0x01), self.bic_device)
+            self.poster.write("system_config", (switch << 1) | (sys & 0x01), self.bic_device_number)
             sys = self.listener.sys_configs

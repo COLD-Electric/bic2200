@@ -5,8 +5,8 @@ windows環境下執行install.bat <br>
 cd <whl檔所在位置> <br>
 pip install <whl檔名.whl> <br>
 
-#執行範例 <h1>
-  <br>
+<h1>#執行範例 </h1>
+<br>
 開啟cmd 輸入以下指令<br>
 cd <下載資料夾所在位置>/example<br>
 充電範例: python charge.py -v <設定電壓> -i <設定電流> Option <br>

@@ -16,4 +16,5 @@ Option:
 Option:
 --max_discharge 最大放電量設定(AH)
 
-監控: python monitor.py
+監控範例: python monitor.py <br>
+

@@ -1,6 +1,7 @@
 from bic2200.bic_set import Bic2200
 import can
 import time
+import os
 
 if __name__ == '__main__':
     # Create a CAN bus object with the canalystii interface and channel 0 at a bitrate of 250 kbps
@@ -13,7 +14,8 @@ if __name__ == '__main__':
             d = bic_device.get_voltage_and_current()
             vout = d[0]
             iout = d[1]
-            print(f"vout:{vout}\tiout:{iout}")
+            print(f"vout:{vout}")
             time.sleep(5)
     except KeyboardInterrupt:
         print("device stop")
+        os._exit(0)

@@ -8,7 +8,6 @@ if __name__ == '__main__':
     bic_device = Bic2200(canbus_bic)
     listener_bic = bic_device.boot()
     time.sleep(1)
-    bic_device.start()
     try:
         while True:
             d = bic_device.get_voltage_and_current()
@@ -18,4 +17,3 @@ if __name__ == '__main__':
             time.sleep(5)
     except KeyboardInterrupt:
         print("device stop")
-        bic_device.stop()

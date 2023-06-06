@@ -1,6 +1,5 @@
 from bic2200 import *
-
-            
+       
 class SendListener(can.Listener):
     instance = None
     def __new__(cls, *args, **kwargs):
@@ -45,13 +44,13 @@ class BicCanSend(object):
     def __init__(self, canbus: can.Bus):
         self.canbus = canbus
     
-    def _send_msg(self, listener: SendListener, bic_device: int, send_address_list: list[int]):
+    def _send_msg(self, listener: SendListener, bic_device_number: int, send_address_list: list[int]):
         """
         Send messages over the CAN bus and wait for a response before moving to the next message in the list.
 
         Args:
             listener (Listener): An instance of the `Listener` class used to check for incoming messages on the CAN bus.
-            bicDevNo (int): An integer representing the number of the BIC device.
+            bic_device_number (int): An integer representing the number of the BIC device.
             sendList (list): A list of message IDs to be sent over the CAN bus.
 
         Raises:
@@ -63,7 +62,7 @@ class BicCanSend(object):
         for send_address in send_address_list:
             # Construct the message ID using the TO_BIC constant, bicDevNo, and the current message ID being sent
             dlc = 2
-            msg_id = (TO_BIC << 8) + bic_device
+            msg_id = (TO_BIC << 8) + bic_device_number
             msg_datas = [(send_address & 0x0FF), ((send_address >> 8) & 0x0FF)]
             # Set the message data to a fixed msgData array and the is_extended_id flag to True
             msg = can.Message(arbitration_id=msg_id, data=bytearray(msg_datas), dlc=dlc, is_extended_id=True)
@@ -81,7 +80,7 @@ class BicCanSend(object):
                 # Reset the receive check flag after a response is received
                 listener.reset_received_flag()
         
-    def read(self, listener, bic_device):
+    def read(self, listener, bic_device_number):
         """
         Send messages over the CAN bus in a loop to request cell voltages, temperature, and system messages.
 
@@ -114,10 +113,10 @@ class BicCanSend(object):
             BIDIRECTIONAL_CONFIG,
         ]
         # Send the initialization messages first
-        self._send_msg(self.canbus, listener, bic_device, init_send_ids_list)
+        self._send_msg(listener, bic_device_number, init_send_ids_list)
         # Enter an infinite loop and send messages to each of the message IDs in the loopSendIdList
         while True:
-            self._send_msg(self.canbus, listener, bic_device, loop_send_id_list)
+            self._send_msg(listener, bic_device_number, loop_send_id_list)
     
     def write(self, str_param, write_datas, bic_device):
         params_list = {

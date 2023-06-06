@@ -42,13 +42,23 @@ class Bic2200(object):
             SendListener: A SendListener object.
         """
         # Create a thread to send messages
-        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device_number))
+        send_msg_task = threading.Thread(target=self.poster.read, args=(self.post_checker, self.bic_device_number))
         send_msg_task.start()
         
         # Add the listener to the CAN bus
         can.Notifier(self.canbus, [self.listener, self.post_checker])
         return self.listener
-
+    @property
+    def _new_send_msg_params(self):
+        return{
+            "operation": self.listener.operations,
+            "direct_control": self.listener.dir_ctrl,
+            "vout_set": self.listener.vout_set,
+            "reverse_vout_set": self.listener.rev_vout_set,
+            "iout_set": self.listener.iout_set,
+            "reverse_iout_set": self.listener.rev_iout_set,
+        }
+    
     def _send_msg(self, str_param, value) -> None:
         """
         Send a message to the BIC2200.
@@ -57,23 +67,15 @@ class Bic2200(object):
             str_param (str): The parameter to set.
             value (float): The value to set the parameter to.
         """
-        params_list = {
-            "operation": self.listener.operations,
-            "direct_control": self.listener.dir_ctrl,
-            "vout_set": self.listener.vout_set,
-            "reverse_vout_set": self.listener.rev_vout_set,
-            "iout_set": self.listener.iout_set,
-            "reverse_iout_set": self.listener.rev_iout_set,
-        }
-        try:
-            read_param = params_list[str_param]
-        except KeyError:
+        read_param = self._new_send_msg_params[str_param]
+        if read_param is None:
             raise KeyError(f"param{str_param} not in list")
         resend_times = 0
         while read_param != value:
-            time.sleep(0.5)
             self.poster.write(str_param, value, self.bic_device_number)
             resend_times = resend_times + 1
+            time.sleep(2)
+            read_param = self._new_send_msg_params[str_param]
             if resend_times > MAX_RESEND - 1:
                 raise RuntimeError(f"No response received for message {str_param}")
 
@@ -95,7 +97,7 @@ class Bic2200(object):
         elif value < min_val:
             value = min_val
         else:
-            value = round(value, 2)
+            value = round(value * 100)
         self._send_msg(param + "_set", value)
     
     def start(self) -> None:
@@ -129,7 +131,7 @@ class Bic2200(object):
         Args:
             vout (float): The value to set the output voltage to.
         """
-        self._set_param(self, "vout", vout)
+        self._set_param("vout", vout)
         
     def set_rev_vout(self, rev_vout_set: float) -> None:
         """
@@ -138,7 +140,7 @@ class Bic2200(object):
         Args:
             rev_vout_set (float): The value to set the reverse output voltage to.
         """
-        self._set_param(self, "reverse_vout", rev_vout_set)
+        self._set_param("reverse_vout", rev_vout_set)
     
     def set_iout(self, iout: float) -> None:
         """
@@ -147,7 +149,7 @@ class Bic2200(object):
         Args:
             iout (float): The value to set the output current to.
         """
-        self._set_param(self, "iout", iout)
+        self._set_param("iout", iout)
     
     def set_rev_iout(self, rev_iout_set: float) -> None:
         """
@@ -156,7 +158,7 @@ class Bic2200(object):
         Args:
             rev_iout_set (float): The value to set the reverse output current to.
         """
-        self._set_param(self, "reverse_iout", rev_iout_set)
+        self._set_param("reverse_iout", rev_iout_set)
 
     def get_voltage_and_current(self) -> list[int]:
         """
@@ -168,21 +170,6 @@ class Bic2200(object):
         vout = self.listener.vout_read
         iout = self.listener.iout_read
         return [vout, iout]
-    
-    def boot(self) -> SendListener:
-        """
-        Starts a thread to send messages and adds the listener to the CAN bus.
-    
-        Returns:
-            SendListener: A SendListener object used for checking if messages have been sent successfully.
-        """
-        # Create a thread to send messages
-        send_msg_task = threading.Thread(target=self.poster.read, args=(self.canbus, self.post_checker, self.bic_device_number))
-        send_msg_task.start()
-    
-        # Add the listener to the CAN bus
-        can.Notifier(self.canbus, [self.listener, self.post_checker])
-        return self.listener
     
     def set_can_ctrl(self) -> None:
         """

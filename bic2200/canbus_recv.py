@@ -166,7 +166,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the set Vout.
         """
-        return round(self.__set_vout * (10 ** self.__vout_factor), 2)
+        return self.__set_vout
     @property
     def iout_set(self):
         """
@@ -175,7 +175,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the set Iout.
         """
-        return round(self.__set_iout * (10 ** self.__iout_factor), 2)
+        return self.__set_iout
     @property
     def rev_vout_set(self):
         """
@@ -184,7 +184,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the set Vout.
         """
-        return round(self.__set_rever_vout * (10 ** self.__vout_factor), 2)
+        return self.__set_rever_vout
     @property
     def rev_iout_set(self):
         """
@@ -193,7 +193,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the set Vout.
         """
-        return round(self.__set_rever_iout * (10 ** self.__iout_factor), 2)
+        return self.__set_rever_iout
     @property
     def vin_read(self):
         """

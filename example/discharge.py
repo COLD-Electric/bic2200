@@ -1,17 +1,30 @@
 from bic2200.bic_set import Bic2200
-import sys, getopt, os
 #from htbibms.bms import HtbiBms
+import sys, getopt, os
 import logging
-import can
 import time
+import can
 
-LOG_LEVEL = logging.INFO
+HELP_MSG = "\
+    usage:\n\
+    python discharge.py -v <voltage> -i <current> [Option]\n\
+    Option:\n\
+    --max_discharge discharge maximum charging capacity\n\
+    --debug debug mode\n\
+    -h, --help help"
 
 if __name__ == '__main__':
-    logging.basicConfig(level=LOG_LEVEL)
+    log_level = logging.INFO
     total_discharge_ah = 0
+    discharge_vout = None
+    discharge_iout = None
+    
     argv = sys.argv[1:]
-    opts, args = getopt.getopt(argv, "-h-v:-i:", ["help","max_discharge="])
+    try:
+        opts, args = getopt.getopt(argv, "-h-v:-i:", ["help","max_discharge=", "debug"])
+    except getopt.GetoptError:
+        print(HELP_MSG)
+        os._exit(0)
     for opt, arg in opts:
         if opt == "-v":
             discharge_vout = float(arg)
@@ -19,39 +32,36 @@ if __name__ == '__main__':
             discharge_iout = float(arg)
         elif opt == "--max_discharge":
             total_discharge_ah = int(arg)
+        elif opt == "--debug":
+            log_level = logging.DEBUG
         else:
-            print("usage:")
-            print("python charge.py -v <voltage> -i <current> [Option]")
-            print("Option:")
-            print("--max_discharge charge maximum charging capacity")
+            print(HELP_MSG)
             os._exit(0)
-            
-    try:
-        # Create a CAN bus object with the canalystii interface and channel 0 at a bitrate of 250 kbps
-        canbus_bic = can.interface.Bus(bustype="canalystii", channel=0, bitrate=250000)
-        bic_device = Bic2200(canbus_bic)
-        listener_bic = bic_device.boot()
-        '''
-        packs = [6]
-        canbus_bms = can.interface.Bus(bustype="canalystii",channel=1, bitrate=500000)
-        bms_device = HtbiBms(canbus_bms, packs)
-        listerner_bms = bms_device.boot()
-        
-        bms_device.clear_pf()
-        bms_device.start()
-        '''
-        time.sleep(5)
-        bic_device.set_rev_vout(discharge_vout) #set voltage
-        bic_device.set_rev_iout(discharge_iout) #set current
-        bic_device.discharge() # set charge mode
-        bic_device.start() # start charging
-        dischargeAh = 0
-    except NameError:
-        print("usage:")
-        print("python charge.py -v <voltage> -i <current> [Option]")
-        print("Option:")
-        print("--max_discharge charge maximum charging capacity")
+    
+    if discharge_vout is None or discharge_iout is None:
+        print(HELP_MSG)
         os._exit(0)
+    
+    logging.basicConfig(level=log_level)    
+    # Create a CAN bus object with the canalystii interface and channel 0 at a bitrate of 250 kbps
+    canbus_bic = can.interface.Bus(bustype="canalystii", channel=0, bitrate=250000)
+    bic_device = Bic2200(canbus_bic)
+    listener_bic = bic_device.boot()
+    '''
+    packs = [6]
+    canbus_bms = can.interface.Bus(bustype="canalystii",channel=1, bitrate=500000)
+    bms_device = HtbiBms(canbus_bms, packs)
+    listerner_bms = bms_device.boot()
+    
+    bms_device.clear_pf()
+    bms_device.start()
+    '''
+    time.sleep(5)
+    bic_device.set_rev_vout(discharge_vout) #set voltage
+    bic_device.set_rev_iout(discharge_iout) #set current
+    bic_device.discharge() # set charge mode
+    bic_device.start() # start charging
+    dischargeAh = 0
     
     try:
         if total_discharge_ah > 0:

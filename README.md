@@ -12,10 +12,14 @@ cd <下載資料夾所在位置>/example<br>
 充電範例: python charge.py -v <設定電壓> -i <設定電流> Option <br>
 Option: <br>
 --max_charge 最大充電量設定(AH) <br>
+--debug 除錯模式 <br>
+--help 查看使用說明 <br>
 
 放電範例: python discharge.py -v <設定電壓> -i <設定電流> Option <br>
 Option: <br>
 --max_discharge 最大放電量設定(AH) <br>
+--debug 除錯模式 <br>
+--help 查看使用說明 <br>
 
 監控範例: python monitor.py <br>
 

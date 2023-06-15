@@ -23,10 +23,10 @@ class BicCanListener(can.Listener):
         self.__bidir_configs = []
         self.__msg_datas = []
         self.__operations = 0
-        self.__iin_factor = 0
+        self.__rev_iout_factor = 0
         self.__temperature_factor = 0
         self.__fan_speed_factor = 0
-        self.__vin_factor = 0
+        self.__rev_vout_factor = 0
         self.__iout_factor = 0
         self.__vout_factor = 0
         self.__set_vout = 0
@@ -106,14 +106,14 @@ class BicCanListener(can.Listener):
         """
         return self.__operations
     @property
-    def iin_factor(self):
+    def rev_iout_factor(self):
         """
-        Returns the value of the Iin factor.
+        Returns the value of the reverse Iout factor.
 
         Returns:
-            int: The value of the Iin factor.
+            int: The value of the reverse Iout factor.
         """
-        return self.__iin_factor
+        return self.__rev_iout_factor
     @property
     def temperature_factor(self):
         """
@@ -133,14 +133,14 @@ class BicCanListener(can.Listener):
         """
         return self.__fan_speed_factor
     @property
-    def vin_factor(self):
+    def rev_vout_factor(self):
         """
-        Returns the value of the Vin factor.
+        Returns the value of the reverse Vout factor.
 
         Returns:
-            int: The value of the Vin factor.
+            int: The value of the reverse Vout factor.
         """
-        return self.__vin_factor
+        return self.__rev_vout_factor
     @property
     def iout_factor(self):
         """
@@ -203,7 +203,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the read Vin.
         """
-        return round(self.__read_vin * (10 ** self.__vin_factor), 2)
+        return round(self.__read_vin * (10 ** self.__rev_vout_factor), 2)
     @property
     def vout_read(self):
         """
@@ -439,7 +439,7 @@ class BicCanListener(can.Listener):
         Sets the values of the scaling factor parameters from a received message.
         """
         # Extract and set the Iin factor
-        self.__iin_factor = self.__extract_and_set_factor(5, 0)
+        self.__rev_iout_factor = self.__extract_and_set_factor(5, 0)
 
         # Extract and set the temperature factor
         self.__temperature_factor = self.__extract_and_set_factor(4, 0)
@@ -448,7 +448,7 @@ class BicCanListener(can.Listener):
         self.__fan_speed_factor = self.__extract_and_set_factor(3, 4)
 
         # Extract and set the Vin factor
-        self.__vin_factor = self.__extract_and_set_factor(3, 0)
+        self.__rev_vout_factor = self.__extract_and_set_factor(3, 0)
 
         # Extract and set the Iout factor
         self.__iout_factor = self.__extract_and_set_factor(2, 4)

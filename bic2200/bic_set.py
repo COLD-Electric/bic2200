@@ -59,7 +59,14 @@ class Bic2200(object):
             "iout_set": self.listener.iout_set,
             "reverse_iout_set": self.listener.rev_iout_set,
         }
-    
+    @property
+    def factors(self):
+        return {
+            "vout_set": self.listener.vout_factor,
+            "reverse_vout_set": self.listener.rev_vout_factor,
+            "iout_set": self.listener.iout_factor,
+            "reverse_iout_set": self.listener.rev_iout_set,
+        }
     def _send_msg(self, str_param, value) -> None:
         """
         Send a message to the BIC2200.
@@ -95,13 +102,20 @@ class Bic2200(object):
             min_val = globals()[f"MIN_{param.upper()}_SET"]
         except KeyError:
             raise KeyError(f"param '{param}' not in list")
+        try:
+            factor = self.factors[param]
+        except KeyError:
+            raise KeyError(f"factor '{param}' not found")
+        
+        param = param + "_set"
         if value > max_val:
             value = max_val
         elif value < min_val:
             value = min_val
         else:
-            value = round(value * 100)
-        self._send_msg(param + "_set", value)
+            factor = self.factors[param]
+            value = round(value / factor)
+        self._send_msg(param, value)
     
     def start(self) -> None:
         """

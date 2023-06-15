@@ -1,4 +1,5 @@
 from bic2200 import *
+import logging
        
 class SendListener(can.Listener):
     instance = None

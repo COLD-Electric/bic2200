@@ -1,5 +1,6 @@
-from bic2200 import *
 from datetime import datetime
+from bic2200 import *
+import logging
 import can
 
 class BicCanListener(can.Listener):

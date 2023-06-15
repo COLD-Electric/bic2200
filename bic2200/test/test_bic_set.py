@@ -47,7 +47,7 @@ class TestBIC2200(unittest.TestCase):
     def test_set_param(self):
         self.instance._send_msg = MagicMock()
         self.instance._set_param("iout", 20)
-        self.instance._send_msg.assert_called_with("iout_set", 20)
+        self.instance._send_msg.assert_called_with("iout_set", 2000)
     
     def test_set_param_max(self):
         self.instance._send_msg = MagicMock()

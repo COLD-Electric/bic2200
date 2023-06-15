@@ -1,6 +1,7 @@
 from bic2200.bic_set import Bic2200
-import can
+import logging
 import time
+import can
 import os
 
 if __name__ == '__main__':
@@ -17,5 +18,12 @@ if __name__ == '__main__':
             print(f"vout:{vout}")
             time.sleep(5)
     except KeyboardInterrupt:
-        print("device stop")
+        print("waiting for stopping...")
+        try:
+            bic_device.stop()
+        except:
+            logging.warning("device did not stop successfully")
+        else:
+            logging.info("device stop")
         os._exit(0)
+        

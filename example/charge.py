@@ -1,10 +1,12 @@
 from bic2200.bic_set import Bic2200
 import sys, getopt, os
 #from htbibms.bms import HtbiBms
+import logging
 import can
 import time
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     total_charge_ah = 0
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "-h-v:-i:", ["help","max_charge="])
@@ -54,14 +56,14 @@ if __name__ == '__main__':
                 vout = d[0]
                 iout = d[1]
                 chargeAh = chargeAh + iout * 5
-                print(f"vout:{vout}\tiout:{iout}\tcharge process:{round(chargeAh / (total_charge_ah * 3600) * 100, 2)}%")
+                logging.info(f"vout:{vout}\tiout:{iout}\tcharge process:{round(chargeAh / (total_charge_ah * 3600) * 100, 2)}%")
                 time.sleep(5)
             bic_device.stop()
             while True:
                 d = bic_device.get_voltage_and_current()
                 vout = d[0]
                 iout = d[1]
-                print(f"vout:{vout}\tiout:{iout}")
+                logging.info(f"vout:{vout}\tiout:{iout}")
                 time.sleep(5)
         else:
             while True:
@@ -69,11 +71,16 @@ if __name__ == '__main__':
                 vout = d[0]
                 iout = d[1]
                 chargeAh = chargeAh + iout * 5
-                print(f"vout:{vout}\tiout:{iout}\tcharge process:{round(chargeAh/3600, 2)}AH")
+                logging.info(f"vout:{vout}\tiout:{iout}\tcharge process:{round(chargeAh/3600, 2)}AH")
                 time.sleep(5)
     
     except KeyboardInterrupt:
-        bic_device.stop()
-        print("device stop")
+        print("waiting for stopping...")
+        try:
+            bic_device.stop()
+        except:
+            logging.warning("device did not stop successfully")
+        else:
+            logging.info("device stop")
         os._exit(0)
         

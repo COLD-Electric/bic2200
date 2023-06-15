@@ -113,7 +113,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the reverse Iout factor.
         """
-        return self.__rev_iout_factor
+        return 10 ** self.__rev_iout_factor
     @property
     def temperature_factor(self):
         """
@@ -122,7 +122,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the temperature factor.
         """
-        return self.__temperature_factor
+        return 10 ** self.__temperature_factor
     @property
     def fan_speed_factor(self):
         """
@@ -131,7 +131,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the fan speed factor.
         """
-        return self.__fan_speed_factor
+        return 10 ** self.__fan_speed_factor
     @property
     def rev_vout_factor(self):
         """
@@ -140,7 +140,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the reverse Vout factor.
         """
-        return self.__rev_vout_factor
+        return 10 ** self.__rev_vout_factor
     @property
     def iout_factor(self):
         """
@@ -149,7 +149,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the Iout factor.
         """
-        return self.__iout_factor
+        return 10 ** self.__iout_factor
     @property
     def vout_factor(self):
         """
@@ -158,7 +158,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the Vout factor.
         """
-        return self.__vout_factor
+        return 10 ** self.__vout_factor
     @property
     def vout_set(self):
         """
@@ -203,7 +203,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the read Vin.
         """
-        return round(self.__read_vin * (10 ** self.__rev_vout_factor), 2)
+        return round(self.__read_vin * self.rev_vout_factor, 2)
     @property
     def vout_read(self):
         """
@@ -212,7 +212,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the read Vout.
         """
-        return round(self.__read_vout * (10 ** self.__vout_factor), 2)
+        return round(self.__read_vout * self.vout_factor, 2)
     @property
     def iout_read(self):
         """
@@ -223,7 +223,7 @@ class BicCanListener(can.Listener):
         """
         if (self.__read_iout >> 15) & 0x01 == 1:
             self.__read_iout = -((~self.__read_iout & 0x0FFFF)+1)
-        return round(self.__read_iout * (10 ** self.__iout_factor), 2)
+        return round(self.__read_iout * self.iout_factor, 2)
     @property
     def temperature_read(self):
         """
@@ -232,7 +232,7 @@ class BicCanListener(can.Listener):
         Returns:
             int: The value of the read temperature.
         """
-        return round(self.__read_temperature * (10 ** self.__temperature_factor), 2)
+        return round(self.__read_temperature * self.temperature_factor, 2)
     @property
     def dir_ctrl(self):
         """

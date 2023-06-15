@@ -103,11 +103,11 @@ class Bic2200(object):
         except KeyError:
             raise KeyError(f"param '{param}' not in list")
         try:
+            param = param + "_set"
             factor = self.factors[param]
         except KeyError:
             raise KeyError(f"factor '{param}' not found")
         
-        param = param + "_set"
         if value > max_val:
             value = max_val
         elif value < min_val:

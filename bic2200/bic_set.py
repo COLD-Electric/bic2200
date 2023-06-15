@@ -69,7 +69,7 @@ class Bic2200(object):
             value (float): The value to set the parameter to.
         """
         read_param = self._new_send_msg_params[str_param]
-        logging.debug(f"WRITE\tparam:{str_param}\tvalue:{read_param}")
+        logging.debug(f"WRITE\tparam:{str_param}\tset_value:{value}\tread_value:{read_param}")
         if read_param is None:
             raise KeyError(f"param{str_param} not in list")
         resend_times = 0
@@ -78,7 +78,7 @@ class Bic2200(object):
             resend_times = resend_times + 1
             time.sleep(2)
             read_param = self._new_send_msg_params[str_param]
-            logging.debug(f"READ{resend_times}\tparam:{str_param}\tvalue:{read_param}")
+            logging.debug(f"READ{resend_times}\tparam:{str_param}\tset_value:{value}\tread_value:{read_param}")
             if resend_times > MAX_RESEND - 1:
                 raise RuntimeError(f"No response received for message {str_param}")
 

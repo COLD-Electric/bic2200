@@ -4,7 +4,10 @@ import time
 import can
 import os
 
+LOG_LEVEL = logging.INFO
+
 if __name__ == '__main__':
+    logging.basicConfig(level=LOG_LEVEL)
     # Create a CAN bus object with the canalystii interface and channel 0 at a bitrate of 250 kbps
     canbus_bic = can.interface.Bus(bustype="canalystii", channel=0, bitrate=250000)
     bic_device = Bic2200(canbus_bic)

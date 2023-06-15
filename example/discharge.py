@@ -5,9 +5,10 @@ import logging
 import can
 import time
 
+LOG_LEVEL = logging.INFO
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=LOG_LEVEL)
     total_discharge_ah = 0
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "-h-v:-i:", ["help","max_discharge="])

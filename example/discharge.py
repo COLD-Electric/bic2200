@@ -1,9 +1,6 @@
-from bic2200.bic_set import Bic2200
+from bic2200 import Bic2200
 #from htbibms.bms import HtbiBms
-import sys, getopt, os
-import logging
-import time
-import can
+import sys, getopt, os, logging, time, can
 
 HELP_MSG = "\
     usage:\n\

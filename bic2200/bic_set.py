@@ -1,9 +1,7 @@
-from bic2200.canbus_send import BicCanSend, SendListener
-from bic2200.canbus_recv import BicCanListener
-from bic2200 import *
-import logging
-import time
-import can
+from .canbus_send import BicCanSend, SendListener
+from .canbus_recv import BicCanListener
+from .param import *
+import logging, time, can, threading
 
 class Bic2200(object):
     def __init__(self, canbus: can.Bus, bic_device_number=0):

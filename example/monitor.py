@@ -1,8 +1,5 @@
-from bic2200.bic_set import Bic2200
-import logging
-import time
-import can
-import os
+from bic2200 import Bic2200
+import logging, time, can, os
 
 LOG_LEVEL = logging.INFO
 

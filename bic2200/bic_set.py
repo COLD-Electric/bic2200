@@ -61,9 +61,9 @@ class Bic2200(object):
     def factors(self):
         return {
             "vout_set": self.listener.vout_factor,
-            "reverse_vout_set": self.listener.rev_vout_factor,
+            "reverse_vout_set": self.listener.vout_factor,
             "iout_set": self.listener.iout_factor,
-            "reverse_iout_set": self.listener.rev_iout_set,
+            "reverse_iout_set": self.listener.iout_factor,
         }
     def _send_msg(self, str_param, value) -> None:
         """
@@ -113,6 +113,7 @@ class Bic2200(object):
         else:
             factor = self.factors[param]
             value = round(value / factor)
+            print(f'param: {param} value: {value}')
         self._send_msg(param, value)
     
     def start(self) -> None:

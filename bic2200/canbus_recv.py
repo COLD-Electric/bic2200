@@ -437,17 +437,11 @@ class BicCanListener(can.Listener):
         """
         Sets the values of the scaling factor parameters from a received message.
         """
-        # Extract and set the Iin factor
-        self.__rev_iout_factor = self.__extract_and_set_factor(5, 0)
-
         # Extract and set the temperature factor
         self.__temperature_factor = self.__extract_and_set_factor(4, 0)
 
         # Extract and set the fan speed factor
         self.__fan_speed_factor = self.__extract_and_set_factor(3, 4)
-
-        # Extract and set the Vin factor
-        self.__rev_vout_factor = self.__extract_and_set_factor(3, 0)
 
         # Extract and set the Iout factor
         self.__iout_factor = self.__extract_and_set_factor(2, 4)

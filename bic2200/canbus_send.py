@@ -44,6 +44,7 @@ class BicCanSend(object):
     
     def __init__(self, canbus: can.Bus):
         self.canbus = canbus
+        self.stop_read = True
     
     def _send_msg(self, listener: SendListener, bic_device_number: int, send_address_list: list[int]):
         """
@@ -116,7 +117,8 @@ class BicCanSend(object):
         # Send the initialization messages first
         self._send_msg(listener, bic_device_number, init_send_ids_list)
         # Enter an infinite loop and send messages to each of the message IDs in the loopSendIdList
-        while True:
+        self.stop_read = False
+        while not self.stop_read:
             self._send_msg(listener, bic_device_number, loop_send_id_list)
     
     def write(self, str_param, write_datas, bic_device):

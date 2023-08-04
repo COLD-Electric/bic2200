@@ -41,12 +41,22 @@ class Bic2200(object):
             SendListener: A SendListener object.
         """
         # Create a thread to send messages
-        send_msg_task = threading.Thread(target=self.poster.read, args=(self.post_checker, self.bic_device_number))
-        send_msg_task.start()
+        self.read_task = threading.Thread(target=self.poster.read, args=(self.post_checker, self.bic_device_number))
+        self.read_task.start()
         
         # Add the listener to the CAN bus
         can.Notifier(self.canbus, [self.listener, self.post_checker])
         return self.listener
+    
+    def halt(self):
+        self.stop()
+        self.poster.stop_read = True
+        try:
+            self.read_task.join()
+        except:
+            pass
+        
+    
     @property
     def _new_send_msg_params(self):
         return{
